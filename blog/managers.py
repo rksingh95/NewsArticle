@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Managers to create the model objects in PosgresDB
 
 class CategoryManager(models.Manager):
