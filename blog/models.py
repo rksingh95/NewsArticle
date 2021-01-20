@@ -76,7 +76,7 @@ class NewsArticle(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    headline = models.CharField(max_length=200, unique=True, blank=False, null=False, help_text='News article headline')
+    headline = models.CharField(max_length=255, unique=True, blank=False, null=False, help_text='News article headline')
     content = models.TextField(blank=False, null=False, help_text='News content')
     published = models.BooleanField(default=True)
 

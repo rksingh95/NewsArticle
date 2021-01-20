@@ -52,19 +52,23 @@ class NewsArticleCreateSerializer(serializers.ModelSerializer):
         author = get_object_or_404(User.objects.all(), id=author_id)
         published = validated_data.get('published', True)
         category = Category.objects.filter(title=headline)
-        if category:
+        try:
+            if category:
+                return NewsArticle.objects.create_news_article(headline=headline,
+                                                               content=content,
+                                                               categories=category,
+                                                               published=published,
+                                                               author=author)
+            category = Category.objects.create(title=headline, description=content)
             return NewsArticle.objects.create_news_article(headline=headline,
                                                            content=content,
-                                                           categories=category,
+                                                           category=category,
                                                            published=published,
-                                                           author=author)
-        category = Category.objects.create(title=headline, description=content)
-        return NewsArticle.objects.create_news_article(headline=headline,
-                                                       content=content,
-                                                       category=category,
-                                                       published=published,
 
-                                                       author=author)
+                                                           author=author)
+        except Exception:
+            error_msg = "Headline length is limited to 255 character"
+            raise serializers.ValidationError(error_msg)
 
 
 class UserListSerializer(serializers.ModelSerializer):
