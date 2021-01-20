@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 django = "*"
+django-model-utils = "*"
+djangorestframework = "*"
 
 [requires]
 python_version = "3.7"
