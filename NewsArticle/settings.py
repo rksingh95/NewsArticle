@@ -78,15 +78,14 @@ WSGI_APPLICATION = 'NewsArticle.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('SQL_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.environ.get('SQL_DATABASE', 'news'),
-        'USER': os.environ.get('SQL_USER', 'postgres'),
-        'PASSWORD': os.environ.get('SQL_PASSWORD', 'test0000'),
-        'HOST': os.environ.get('SQL_HOST', 'localhost'),
-        'PORT': os.environ.get('SQL_PORT', '5432'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'news',
+        'USER': 'postgres',
+        'PASSWORD': 'rahul12345',
+        'HOST': 'localhost',
+        'PORT': 5432,
     }
 }
 
