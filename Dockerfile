@@ -6,6 +6,6 @@ RUN python -m pip install --upgrade pip
 ENV PYTHONUNBUFFERED=1
 RUN mkdir /NewsArticle
 WORKDIR /NewsArticle/
-COPY requirements.txt /NewsArticle/
+COPY requirements.txt /NewsArticle/ requirements.txt/
 RUN pip install -r requirements.txt
 COPY . /NewsArticle/
