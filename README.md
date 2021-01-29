@@ -1,4 +1,6 @@
 # NewsArticle
+# rsingh95/newsarticle_web (Docker Image)
+
 NOTE: In our case the user is created for admin login via conslole and is admin user creation
 needs to take place via admin and so is the address. 
 
