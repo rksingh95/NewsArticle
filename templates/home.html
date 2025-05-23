@@ -1,0 +1,18 @@
+{% load socialaccount %} <!-- Required for google login button -->
+{% get_providers as socialaccount_providers %} <!-- Required for google login button -->
+
+<h1>Welcome to the AI Newsletter</h1>
+{% if user.is_authenticated %}
+    <p>Hello, {{ user.email }}!</p>
+    <a href="{% url 'account_logout' %}">Logout</a>
+{% else %}
+    <p>Please sign in to continue.</p>
+    {% for provider in socialaccount_providers %}
+        {% if provider.id == 'google' %}
+            <a href="{% provider_login_url 'google' %}">Login with Google</a>
+        {% endif %}
+    {% endfor %}
+    <br>
+    <!-- You can also add a link to the standard login page if you have one -->
+    <!-- <a href="{% url 'account_login' %}">Login with Email/Password</a> -->
+{% endif %}

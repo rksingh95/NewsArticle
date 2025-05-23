@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
-from blog.models import User, NewsArticle, Category
+from blog.models import User, NewsArticle, Category, Subscription # Add Subscription import
 
 
 class NewsArticleContentListSerializer(serializers.ModelSerializer):
@@ -75,3 +75,10 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name', 'last_name', 'gender', 'birth_date', 'contact_address')
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = ['user', 'is_active', 'subscribed_at', 'unsubscribed_at']
+        read_only_fields = ['user', 'subscribed_at', 'unsubscribed_at'] # User is set from request
