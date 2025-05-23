@@ -1,6 +1,8 @@
 import uuid
 
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings # Added for settings.AUTH_USER_MODEL
 
 # Create your models here.
 from blog.managers import NewsArticleManager, CategoryManager
@@ -41,7 +43,7 @@ class Category(models.Model):
     objects = CategoryManager()
 
 
-class User(models.Model):
+class User(AbstractUser):
     """
     User model to create user object
     Note user creation only supported via admin and so is its address object
@@ -58,16 +60,23 @@ class User(models.Model):
         (UNKNOWN, "Unknown"),
     ]
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True) # Changed from id
+    
+    # email, first_name, last_name are inherited from AbstractUser.
+    # We need to ensure email is unique for USERNAME_FIELD to work.
+    email = models.EmailField(unique=True) # Ensure email is unique
 
-    email = models.EmailField(max_length=255, verbose_name='email address', unique=True, help_text='User Email')
-    first_name = models.CharField(max_length=255, blank=True, editable=True, help_text=' User First Name')
-    last_name = models.CharField(max_length=255, blank=True, help_text='User Last Name')
     gender = models.CharField(max_length=16, choices=GENDER_CHOICES, default=UNKNOWN,
                               help_text='Gender choice M, F, O, U')
-    birth_date = models.DateField(null=True, help_text=' Date of birth of user')
-    contact_address = models.OneToOneField(Address, on_delete=models.CASCADE, default=None, blank=True, null=True,
+    birth_date = models.DateField(null=True, blank=True, help_text=' Date of birth of user') # Added blank=True for consistency
+    contact_address = models.OneToOneField('Address', on_delete=models.CASCADE, default=None, blank=True, null=True,
                                            help_text='User Contact address related to address class ')
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name'] # Example: make first and last name required for createsuperuser
+
+    def __str__(self):
+        return self.email # Changed to email as it's the username field
 
 
 class NewsArticle(models.Model):
@@ -100,3 +109,23 @@ class NewsArticle(models.Model):
 
     def __str__(self):
         return "id: %s author: %s" % (self.id, self.author.email)
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, # Reference the configured user model
+        on_delete=models.CASCADE,
+        related_name='subscriptions'
+    )
+    is_active = models.BooleanField(default=True, help_text="Is the user currently subscribed?")
+    subscribed_at = models.DateTimeField(auto_now_add=True, help_text="When the subscription was created/activated")
+    unsubscribed_at = models.DateTimeField(null=True, blank=True, help_text="When the subscription was deactivated")
+    # Potentially add a field for newsletter type if you plan multiple newsletters
+    # newsletter_type = models.CharField(max_length=50, default='ai_news')
+
+    class Meta:
+        unique_together = ('user',) # Ensure a user can only have one subscription entry
+        # If you add newsletter_type, unique_together would be ('user', 'newsletter_type')
+
+    def __str__(self):
+        return f"{self.user.email} - {'Active' if self.is_active else 'Inactive'}"

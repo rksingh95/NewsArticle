@@ -37,6 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # django-allauth
+    'django.contrib.sites', # Required by allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', # For Google Sign-In
+
     'blog'
 ]
 
@@ -48,11 +56,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware', # django-allauth middleware
 ]
+
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.RemoteUserBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend', # Default Django auth
+    'allauth.account.auth_backends.AuthenticationBackend', # django-allauth
 )
+
+AUTH_USER_MODEL = 'blog.User'
+
+SITE_ID = 1
 
 ROOT_URLCONF = 'NewsArticle.urls'
 
@@ -124,3 +138,28 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Gemini API Key Configuration
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+
+if DEBUG and not GEMINI_API_KEY:
+    print("WARNING: GEMINI_API_KEY environment variable is not set. AI features will not work.")
+
+# Django Allauth specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+LOGIN_REDIRECT_URL = '/' # Or some other appropriate URL
+ACCOUNT_EMAIL_VERIFICATION = 'optional' # or 'mandatory' or 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'email' # Use email for login
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False # If using email as the primary identifier
